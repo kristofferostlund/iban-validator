@@ -7,7 +7,7 @@ type Country struct {
 	Format    string
 }
 
-// Taken from https://en.wikipedia.org/wiki/International_Bank_Account_Number#IBAN_formats_by_country
+// All are copied from https://en.wikipedia.org/wiki/International_Bank_Account_Number#IBAN_formats_by_country
 var countries = map[string]Country{
 	"AL": Country{
 		Name:      "Albania",

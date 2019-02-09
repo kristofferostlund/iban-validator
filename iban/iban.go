@@ -10,11 +10,10 @@ import (
 )
 
 const (
-	ibanMaxLength = 34
-	modValue      = 97
+	ibanMaxLength        = 34
+	modValue             = 97
+	checkDigitsChunkSize = 7
 )
-
-var numbers = "1234567890"
 
 func Validate(iban string) (bool, string, error) {
 	sanitized := helpers.SanitizeInput(iban)
@@ -57,27 +56,16 @@ func Validate(iban string) (bool, string, error) {
 }
 
 func ValidateCheckDigits(input string) (bool, error) {
-	// From https://en.wikipedia.org/wiki/International_Bank_Account_Number#Modulo_operation_on_IBAN#IBAN_formats_by_country
+	// From https://en.wikipedia.org/wiki/International_Bank_Account_Number#Modulo_operation_on_IBAN
 	reordered := input[4:] + input[:4]
-
-	integerString := ""
-	for _, char := range reordered {
-		if strings.ContainsRune(numbers, char) {
-			integerString += string(char)
-			continue
-		}
-		integerString += strconv.Itoa(helpers.RuneToIBANInt(char))
-	}
+	integerString := helpers.IBANToIntegerString(reordered)
 
 	nMod := 0
 	current := integerString[:2]
 	remainder := integerString[2:]
 
-	for {
-		if len(remainder) < 1 {
-			break
-		}
-		i := int(math.Min(7.0, float64(len(remainder))))
+	for len(remainder) > 0 {
+		i := int(math.Min(float64(checkDigitsChunkSize), float64(len(remainder))))
 
 		if nMod == 0 {
 			current = current + remainder[:i]

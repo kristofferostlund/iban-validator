@@ -6,20 +6,21 @@ import (
 	"github.com/kristofferostlund/iban-validator/iban/helpers"
 )
 
-func TestRuneToIBANInt(t *testing.T) {
+func TestIBANToIntegerString(t *testing.T) {
 	cases := []struct {
-		input    rune
-		expected int
+		input    string
+		expected string
 	}{
-		{'A', 10},
-		{'B', 11},
-		{'Z', 35},
+		{"A", "10"},
+		{"B", "11"},
+		{"Z", "35"},
+		{"AZ123", "1035123"},
 	}
 
 	for _, test := range cases {
-		actual := helpers.RuneToIBANInt(test.input)
+		actual := helpers.IBANToIntegerString(test.input)
 		if test.expected != actual {
-			t.Errorf("RuneToIBANInt(%+v), expected %d, got: %d", test.input, test.expected, actual)
+			t.Errorf("IBANToIntegerString(%+v), expected %s, got: %s", test.input, test.expected, actual)
 		}
 	}
 }

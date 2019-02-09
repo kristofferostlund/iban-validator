@@ -267,3 +267,13 @@ func TestValidateCheckDigits_valid(t *testing.T) {
 		t.Errorf("CalculateChecksumString(%+v), expected IBAN to be valid, got isValid: %t, error: %v", input, isValid, err)
 	}
 }
+
+func TestValidateCheckDigits_invalid(t *testing.T) {
+	input := "GB81WEST12345698765432"
+
+	isValid, err := iban.ValidateCheckDigits(input)
+
+	if isValid {
+		t.Errorf("CalculateChecksumString(%+v), expected IBAN to be invalid, got isValid: %t, error: %v", input, isValid, err)
+	}
+}
