@@ -52,7 +52,7 @@ func Validate(iban string) (bool, string, error) {
 		return false, message, nil
 	}
 
-	return true, "Valid IBAN", nil
+	return true, "IBAN is valid", nil
 }
 
 func ValidateCheckDigits(input string) (bool, error) {
