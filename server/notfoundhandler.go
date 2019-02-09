@@ -3,7 +3,7 @@ package server
 import (
 	"net/http"
 
-	"github.com/kristofferostlund/pfc-iban-validator/server/responses"
+	"github.com/kristofferostlund/iban-validator/server/responses"
 )
 
 func (s *Server) notFoundHandler() http.HandlerFunc {

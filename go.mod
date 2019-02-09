@@ -1,1 +1,1 @@
-module github.com/kristofferostlund/pfc-iban-validator
+module github.com/kristofferostlund/iban-validator

@@ -3,9 +3,9 @@ package server
 import (
 	"net/http"
 
-	"github.com/kristofferostlund/pfc-iban-validator/iban"
-	"github.com/kristofferostlund/pfc-iban-validator/server/requests"
-	"github.com/kristofferostlund/pfc-iban-validator/server/responses"
+	"github.com/kristofferostlund/iban-validator/iban"
+	"github.com/kristofferostlund/iban-validator/server/requests"
+	"github.com/kristofferostlund/iban-validator/server/responses"
 )
 
 func (s *Server) handleIbanValidatePost() requests.FailableHandler {

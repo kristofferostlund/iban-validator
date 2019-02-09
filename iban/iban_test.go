@@ -4,64 +4,47 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/kristofferostlund/pfc-iban-validator/iban"
+	"github.com/kristofferostlund/iban-validator/iban"
 )
 
-func TestRuneToIBANInt(t *testing.T) {
+func TestValidate_valid(t *testing.T) {
+	// Taken from https://www.iban.com/structure
 	cases := []struct {
-		input    rune
-		expected int
+		input string
 	}{
-		{'a', 10},
-		{'b', 11},
-		{'z', 35},
+		{"se72 8000 0810 3400 0978 3242"},
+		{"SE7280000810340009783242"},
+		{"GB82 WEST 1234 5698 7654 32	"},
 	}
 
 	for _, test := range cases {
-		actual := iban.RuneToIBANInt(test.input)
-		if test.expected != actual {
-			t.Errorf("RuneToIBANInt(%+v), expected %d, got: %d", test.input, test.expected, actual)
+		isValid, message, err := iban.Validate(test.input)
+
+		actuals := fmt.Sprintf(
+			"got isValid: %t, message: \"%s\", error: \"%v\"",
+			isValid,
+			message,
+			err,
+		)
+
+		if !isValid {
+			t.Errorf(
+				"Validate(%+v), expected IBAN to be valid, %s",
+				test.input,
+				actuals,
+			)
+		}
+
+		if err != nil {
+			t.Errorf(
+				"Validate(%+v), expected IBAN to not return error, %s",
+				test.input,
+				actuals,
+			)
 		}
 	}
 }
-
-func TestSanitizeInput(t *testing.T) {
-	cases := []struct {
-		input    string
-		expected string
-	}{
-		{"1234 5678 90AB CDEF", "1234567890ABCDEF"},
-		{"1234 5678 90ab cdef", "1234567890ABCDEF"},
-	}
-
-	for _, test := range cases {
-		actual := iban.SanitizeInput(test.input)
-		if test.expected != actual {
-			t.Errorf("SanitizeInput(%+v), expected %s, got: %s", test.input, test.expected, actual)
-		}
-	}
-}
-
-func TestCharactersAreValid(t *testing.T) {
-	cases := []struct {
-		input    string
-		expected bool
-	}{
-		{"1234567890ABCDEF", true},
-		{"HELLOTHERE", true},
-		{"1234 5678 90AB CDEF", false},
-		{"", false},
-	}
-
-	for _, test := range cases {
-		actual := iban.CharactersAreValid(test.input)
-		if test.expected != actual {
-			t.Errorf("CharactersAreValid(%+v), expected %t, got: %t", test.input, test.expected, actual)
-		}
-	}
-}
-
-func TestValidate_validSupportedCountries(t *testing.T) {
+func TestValidate_valid_supportedCountries(t *testing.T) {
 	// Taken from https://www.iban.com/structure
 	cases := []struct {
 		country string
@@ -141,25 +124,28 @@ func TestValidate_validSupportedCountries(t *testing.T) {
 	for _, test := range cases {
 		isValid, message, err := iban.Validate(test.input)
 
+		actuals := fmt.Sprintf(
+			"got isValid: %t, message: \"%s\", error: \"%v\"",
+			isValid,
+			message,
+			err,
+		)
+
 		if !isValid {
 			t.Errorf(
-				"Validate(%+v), expected IBAN for %s to be valid, got isValid: %t, message: \"%s\", error: \"%v\"",
+				"Validate(%+v), expected IBAN (%s) to be valid, %s",
 				test.input,
 				test.country,
-				isValid,
-				message,
-				err,
+				actuals,
 			)
 		}
 
 		if err != nil {
 			t.Errorf(
-				"Validate(%+v), expected IBAN for %s to not return error, got isValid: %t, message: \"%s\", error: \"%v\"",
+				"Validate(%+v), expected IBAN (%s) to not return error, %s",
 				test.input,
 				test.country,
-				isValid,
-				message,
-				err,
+				actuals,
 			)
 		}
 	}
@@ -182,39 +168,156 @@ func TestValidate_unsupportedCountries(t *testing.T) {
 	for _, test := range cases {
 		isValid, message, err := iban.Validate(test.input)
 
+		actuals := fmt.Sprintf(
+			"got isValid: %t, message: \"%s\", error: \"%v\"",
+			isValid,
+			message,
+			err,
+		)
+
 		if isValid {
 			t.Errorf(
-				"Validate(%+v), expected IBAN for %s to be invalid, got isValid: %t, message: \"%s\", error: \"%v\"",
+				"Validate(%+v), expected IBAN (from %s) to be invalid, %s",
 				test.input,
 				test.country,
-				isValid,
-				message,
-				err,
+				actuals,
 			)
 		}
 
-		if err == nil {
+		if err != nil {
 			t.Errorf(
-				"Validate(%+v), expected IBAN for %s to return an error, got isValid: %t, message: \"%s\", error: \"%v\"",
+				"Validate(%+v), expected IBAN (from %s) not return an error, %s",
 				test.input,
 				test.country,
-				isValid,
-				message,
-				err,
+				actuals,
 			)
 		}
 
-		expectedError := fmt.Errorf("Invalid or unsupported country code (%s)", test.countryCode)
-		if err.Error() != expectedError.Error() {
+		expectedMessage := "Invalid or unsupported country code"
+		if expectedMessage != message {
 			t.Errorf(
-				"Validate(%+v), expected IBAN for %s to return the error \"%+v\", got isValid: %t, message: \"%s\", error: \"%v\"",
+				"Validate(%+v), expected IBAN (from %s) to return the message \"%s\", %s",
 				test.input,
 				test.country,
-				test.countryCode,
-				isValid,
-				message,
-				err,
+				expectedMessage,
+				actuals,
 			)
 		}
+	}
+}
+
+func TestValidate_invalid_noError(t *testing.T) {
+	// Taken from https://www.iban.com/structure
+	cases := []struct {
+		input   string
+		message string
+	}{
+		{"SE72 8000 0810 3400 0978 3242 8000 0810 3400 0978 3242 8000 0810 3400 0978 3242", "IBAN cannot be longer than 34 characters"},
+		{"🏦🏦🏦🏦", "IBAN contains invalid characters"},
+		{"SE72 8000 0810 3400 0978 f̅f̅f̅f̅", "IBAN contains invalid characters"},
+		{"SV43 ACAT 0000 0000 0000 0012 3123", "Invalid or unsupported country code"},
+		{"SE72 8000 0810 3400 0978 3242 3242", "IBAN length is invalid, expected length is 24, got 28"},
+		// {"SE72 8000 0810 3400 0978 3241", "Invalid IBAN, could not verify check digits"}, // This error should not be able to occur
+		{"SE72 8000 0810 3400 0978 3241", "Invalid IBAN, check digits are invalid for the provided IBAN"},
+	}
+
+	for _, test := range cases {
+		isValid, message, err := iban.Validate(test.input)
+
+		actuals := fmt.Sprintf(
+			"got isValid: %t, message: \"%s\", error: \"%v\"",
+			isValid,
+			message,
+			err,
+		)
+
+		if isValid {
+			t.Errorf(
+				"Validate(%+v), expected IBAN to be invalid, %s",
+				test.input,
+				actuals,
+			)
+		}
+
+		if err != nil {
+			t.Errorf(
+				"Validate(%+v), expected IBAN to return an error, %s",
+				test.input,
+				actuals,
+			)
+		}
+
+		if test.message != message {
+			t.Errorf(
+				"Validate(%+v), expected IBAN to return the message \"%+s\", %s",
+				test.input,
+				test.message,
+				actuals,
+			)
+		}
+	}
+}
+
+func TestRuneToIBANInt(t *testing.T) {
+	cases := []struct {
+		input    rune
+		expected int
+	}{
+		{'A', 10},
+		{'B', 11},
+		{'Z', 35},
+	}
+
+	for _, test := range cases {
+		actual := iban.RuneToIBANInt(test.input)
+		if test.expected != actual {
+			t.Errorf("RuneToIBANInt(%+v), expected %d, got: %d", test.input, test.expected, actual)
+		}
+	}
+}
+
+func TestSanitizeInput(t *testing.T) {
+	cases := []struct {
+		input    string
+		expected string
+	}{
+		{"1234 5678 90AB CDEF", "1234567890ABCDEF"},
+		{"1234 5678 90ab cdef", "1234567890ABCDEF"},
+	}
+
+	for _, test := range cases {
+		actual := iban.SanitizeInput(test.input)
+		if test.expected != actual {
+			t.Errorf("SanitizeInput(%+v), expected %s, got: %s", test.input, test.expected, actual)
+		}
+	}
+}
+
+func TestCharactersAreValid(t *testing.T) {
+	cases := []struct {
+		input    string
+		expected bool
+	}{
+		{"1234567890ABCDEF", true},
+		{"HELLOTHERE", true},
+		{"1234 5678 90AB CDEF", false},
+		{"", false},
+	}
+
+	for _, test := range cases {
+		actual := iban.CharactersAreValid(test.input)
+		if test.expected != actual {
+			t.Errorf("CharactersAreValid(%+v), expected %t, got: %t", test.input, test.expected, actual)
+		}
+	}
+}
+
+func TestValidateCheckDigits_valid(t *testing.T) {
+	input := "GB82WEST12345698765432"
+
+	isValid, err := iban.ValidateCheckDigits(input)
+
+	if !isValid {
+		t.Errorf("CalculateChecksumString(%+v), expected IBAN to be valid, got isValid: %t, error: %v", input, isValid, err)
 	}
 }

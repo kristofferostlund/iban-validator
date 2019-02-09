@@ -429,7 +429,8 @@ var countries = map[string]Country{
 		CharCount: 24,
 		Format:    "VGkk bbbb cccc cccc cccc cccc",
 	},
-	// Special list from Nordea
+
+	// Additional countries from Nordea
 	"DZ": Country{
 		Name:      "Algeria",
 		Code:      "DZ",
@@ -513,5 +514,67 @@ var countries = map[string]Country{
 		Code:      "UA",
 		CharCount: 29,
 		Format:    "UAkk bbbb bbcc cccc cccc cccc cccc c",
+	},
+
+	// Additional countries from SWIFT
+	"KM": {
+		Name:      "Comoros",
+		Code:      "KM",
+		CharCount: 27,
+		Format:    "KMkk nnnn nnnn nnnn nnnn nnnn nnn",
+	},
+	"TD": {
+		Name:      "Chad",
+		Code:      "TD",
+		CharCount: 27,
+		Format:    "TDkk nnnn nnnn nnnn nnnn nnnn nnn",
+	},
+	"CG": {
+		Name:      "Congo",
+		Code:      "CG",
+		CharCount: 27,
+		Format:    "CGkk nnnn nnnn nnnn nnnn nnnn nnn",
+	},
+	"EG": {
+		Name:      "Egypt",
+		Code:      "EG",
+		CharCount: 27,
+		Format:    "EGkk nnnn nnnn nnnn nnnn nnnn nnn",
+	},
+	"GA": {
+		Name:      "Gabon",
+		Code:      "GA",
+		CharCount: 27,
+		Format:    "GAkk nnnn nnnn nnnn nnnn nnnn nnn",
+	},
+	"HN": {
+		Name:      "Honduras",
+		Code:      "HN",
+		CharCount: 28,
+		Format:    "HNkk aaaa nnnn nnnn nnnn nnnn nnnn",
+	},
+	"MA": {
+		Name:      "Morocco",
+		Code:      "MA",
+		CharCount: 28,
+		Format:    "MAkk nnnn nnnn nnnn nnnn nnnn nnnn",
+	},
+	"NI": {
+		Name:      "Nicaragua",
+		Code:      "NI",
+		CharCount: 32,
+		Format:    "NIkk aaaa nnnn nnnn nnnn nnnn nnnn nnnn",
+	},
+	"NE": {
+		Name:      "Niger",
+		Code:      "NE",
+		CharCount: 28,
+		Format:    "NEkk aann nnnn nnnn nnnn nnnn nnnn",
+	},
+	"TG": {
+		Name:      "Togo",
+		Code:      "TG",
+		CharCount: 28,
+		Format:    "TGkk aann nnnn nnnn nnnn nnnn nnnn",
 	},
 }

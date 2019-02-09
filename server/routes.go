@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/kristofferostlund/pfc-iban-validator/server/requests"
+	"github.com/kristofferostlund/iban-validator/server/requests"
 )
 
 func (s *Server) initRoutes() {

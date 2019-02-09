@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 
-	"github.com/kristofferostlund/pfc-iban-validator/server"
+	"github.com/kristofferostlund/iban-validator/server"
 )
 
 var address = flag.String(

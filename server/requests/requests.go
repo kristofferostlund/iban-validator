@@ -8,7 +8,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/kristofferostlund/pfc-iban-validator/server/responses"
+	"github.com/kristofferostlund/iban-validator/server/responses"
 )
 
 type FailableHandler func(http.ResponseWriter, *http.Request) error
