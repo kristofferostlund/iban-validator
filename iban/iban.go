@@ -3,9 +3,10 @@ package iban
 import (
 	"fmt"
 	"math"
-	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/kristofferostlund/iban-validator/iban/helpers"
 )
 
 const (
@@ -13,19 +14,16 @@ const (
 	modValue      = 97
 )
 
-var letterOffset = int('A') - 10
-var numberOffset = int('0')
-var validCharacters = regexp.MustCompile("^[0-9A-Z]+$")
 var numbers = "1234567890"
 
 func Validate(iban string) (bool, string, error) {
-	sanitized := SanitizeInput(iban)
+	sanitized := helpers.SanitizeInput(iban)
 
 	if len(sanitized) > ibanMaxLength {
 		return false, fmt.Sprintf("IBAN cannot be longer than %d characters", ibanMaxLength), nil
 	}
 
-	if !CharactersAreValid(sanitized) {
+	if !helpers.CharactersAreValid(sanitized) {
 		return false, "IBAN contains invalid characters", nil
 	}
 
@@ -58,19 +56,6 @@ func Validate(iban string) (bool, string, error) {
 	return true, "Valid IBAN", nil
 }
 
-func SanitizeInput(input string) string {
-	noWhitespace := strings.Join(strings.Fields(input), "")
-	return strings.ToUpper(noWhitespace)
-}
-
-func CharactersAreValid(iban string) bool {
-	return validCharacters.MatchString(iban)
-}
-
-func RuneToIBANInt(char rune) int {
-	return int(char) - letterOffset
-}
-
 func ValidateCheckDigits(input string) (bool, error) {
 	// From https://en.wikipedia.org/wiki/International_Bank_Account_Number#Modulo_operation_on_IBAN#IBAN_formats_by_country
 	reordered := input[4:] + input[:4]
@@ -81,7 +66,7 @@ func ValidateCheckDigits(input string) (bool, error) {
 			integerString += string(char)
 			continue
 		}
-		integerString += strconv.Itoa(RuneToIBANInt(char))
+		integerString += strconv.Itoa(helpers.RuneToIBANInt(char))
 	}
 
 	nMod := 0
