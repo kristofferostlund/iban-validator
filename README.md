@@ -15,7 +15,7 @@ Don't worry about making a perfect solution to this problem: no need to solve ev
 
 The web server can be started using either `go run cli/cli.go -port=5000 -address=localhost` or by building a binary and executing it like so:
 
-````bash
+```bash
 go build -o webserver cli/cli.go \
   && chmod +x ./webserver \
   && ./webserver -port=5000 -address=localhost
